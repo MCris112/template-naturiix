@@ -1,1 +1,57 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Volkhov", ui-sans-serif, system-ui, sans-serif;
+
+    --color-primary-50: #f3faf3;
+    --color-primary-100: #e4f4e4;
+    --color-primary-200: #cae8cb;
+    --color-primary-300: #a0d5a3;
+    --color-primary-400: #6fb973;
+    --color-primary-500: #4b9c50;
+    --color-primary-600: #387d3c;
+    --color-primary-700: #306534;
+    --color-primary-800: #2a512d;
+    --color-primary-900: #244326;
+    --color-primary-950: #0f2411;
+    --color-primary: #387D3C;
+
+    --color-accent: #802b87;
+    --color-accent-50: #fcf5fe;
+    --color-accent-100: #f8ebfc;
+    --color-accent-200: #f1d6f8;
+    --color-accent-300: #e8b6f1;
+    --color-accent-400: #dc8ae8;
+    --color-accent-500: #c85cd9;
+    --color-accent-600: #ae3dbc;
+    --color-accent-700: #922f9c;
+    --color-accent-800: #802b87;
+    --color-accent-900: #652669;
+    --color-accent-950: #410e44;
+}
+
+.z-2
+{
+    z-index: 2;
+}
+
+.container
+{
+    width: 1200px;
+    max-width: 90vw;
+    margin: 0 auto;
+}
+
+.btn
+{
+    border: solid 2px transparent;
+    @apply px-3 py-2;
+
+    &.btn-accent{
+        @apply bg-accent text-white border-accent hover:bg-accent-900 transition ease-in;
+    }
+
+    &.btn-accent-outline{
+        @apply bg-transparent text-accent border-accent hover:bg-accent-900 transition ease-in;
+    }
+}

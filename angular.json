@@ -30,6 +30,7 @@
               }
             ],
             "styles": [
+              "node_modules/boxicons/css/boxicons.min.css",
               "src/styles.scss"
             ]
           },
@@ -67,6 +68,9 @@
               "buildTarget": "template-naturiix:build:development"
             }
           },
+          "options": {
+            "host": "0.0.0.0"
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
@@ -94,5 +98,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "ac829b3d-6ce0-4cf6-870f-ec59496eb25d"
   }
 }
