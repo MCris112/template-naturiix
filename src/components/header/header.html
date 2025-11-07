@@ -1,0 +1,61 @@
+<header class="w-full py-3 fixed top-0 z-999">
+    <div class="container flex items-center justify-between">
+        <figure class="block w-[100px]">
+            <img src="/logo.png" alt="Logo template Figure" class="w-full">
+        </figure>
+
+        <form class="hidden md:flex border-2 border-accent">
+            <input type="text" class="text-accent">
+            <button class="w-10 h-10 bg-accent text-white"><i class='bx bx-search-alt-2' ></i></button>
+        </form>
+
+        <button (click)="isOpen$.set( true )" class="relative z-20 flex items-center justify-center text-3xl border-accent border-2 text-accent w-14 h-14 hover:bg-accent hover:text-white transition ease-in">
+            <i class='bx bx-menu'></i>
+        </button>
+    </div>
+</header>
+
+<div (click)="isOpen$.set(false)" class="{{ isOpen$() ? 'fixed' : 'hidden' }}   top-0 left-0 w-full h-full bg-black opacity-60 z-999999"></div>
+<div class="{{ isOpen$() ? 'translate-x-0' : 'translate-x-full' }} fixed top-0 right-0 bg-white w-[90vw] h-full z-999999 transition ease-in overflow-y-scroll">
+    <div class="px-4 py-6 flex flex-col gap-6">
+        <div class="flex items-center">
+            <figure class="w-[200px] max-w-full basis-1/2">
+                <img src="/logo.png" alt="" class="w-full">
+            </figure>
+
+            <div class="basis-1/2 flex justify-end">
+                <button (click)="isOpen$.set( false )" class="flex items-center justify-center text-3xl border-accent border-2 text-accent w-14 h-14 hover:bg-accent hover:text-white transition ease-in">
+                    <i class="bx bx-x"></i>
+                </button>
+            </div>
+        </div>
+
+        <nav class="w-full flex flex-col gap-0">
+            @for (item of menu; track $index) {
+                <a [routerLink]="item.route" class="group basis-full flex items-baseline justify-between text-xl py-2 border-b-2 border-transparent transition ease-in hover:border-accent">
+                    <span>{{ item.label }}</span>
+                    
+                    <div class="opacity-0 group-hover:opacity-100 transition ease-in">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="none" viewBox="0 0 44 44">
+                            <path fill="#802B87" d="M11.303 14.88a1.886 1.886 0 01.029-.37c.285-1.556.748-2.574 2.426-3.15.413-.142.718-.512.718-.95 0-.43-.319-.77-.646-1.049-.601-.51-.48-1.39-.482-2.252-.09-1.851-.025-2.796.055-3.273.054-.325.193-.656.445-.866 1.91-1.594 11.22-1.309 13.567-.463.171.061.321.164.446.297.846.903.427 1.597.47 3.388.003.13.022.258.048.385.162.8.186 1.817-.266 2.37-.27.33-.615.669-.625 1.097-.01.403.244.764.611.931 2.026.918 2.578 2.184 2.582 2.88 0 .129-.013.257-.01.386l.545 23.192c.008.329-.059.658-.236.934-3.241 5.06-16.03 4.886-19.07.196a1.618 1.618 0 01-.236-.86l-.371-22.823z"></path>
+                        </svg>
+                    </div>
+                </a>
+            }
+        </nav>
+
+        <article class="w-full bg-primary">
+            <figure><img src="/assets/images/blog/big_camu_camu.jpg" alt=""></figure>
+
+            <div class="w-full p-4 text-white">
+                <h2 class="font-bold mb-3">Vivamus Elementum: Diseño que Inspira</h2>
+                <p class="line-clamp-3 opacity-80">Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus</p>
+            </div>
+        </article>
+
+        <div class="w-full text-primary text-3xl py-3 flex items-center gap-3">
+            <i class='bx bxl-facebook-square text-5xl'></i>
+            <span>@naturiix</span>
+        </div>
+    </div>
+</div>
