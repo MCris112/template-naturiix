@@ -1,12 +1,14 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { SwiperDirective } from '../../core/directives/swiper';
 import { SwiperOptions } from 'swiper/types';
+import { HeaderComponent } from '../../components/header/header';
 
 @Component({
     selector: 'home-page',
     templateUrl: 'home.page.html',
     imports: [
-        SwiperDirective
+        SwiperDirective,
+        HeaderComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
