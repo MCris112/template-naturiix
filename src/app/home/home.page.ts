@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, viewChild, viewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CreditComponent } from '../../components/credit/credit';
 import { SearchComponent } from '../../components/search/search';
 import { gsap } from '../../core/animations/gsap';
 import { products } from '../product/product.data';
@@ -7,7 +8,7 @@ import { products } from '../product/product.data';
 @Component({
   selector: 'home-page',
   templateUrl: 'home.page.html',
-  imports: [RouterLink, SearchComponent],
+  imports: [RouterLink, SearchComponent, CreditComponent],
 })
 export class HomePage implements AfterViewInit, OnDestroy {
   private hero = viewChild.required<ElementRef<HTMLElement>>('hero');

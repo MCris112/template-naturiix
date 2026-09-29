@@ -1,8 +1,11 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { gsap } from '../../core/animations/gsap';
+import { SOCIAL_HANDLE, SOCIAL_LINKS, whatsappLink } from '../../core/contact';
+import { CreditComponent } from '../credit/credit';
 import { SearchComponent } from '../search/search';
 
 type MenuItem = {
@@ -14,10 +17,10 @@ type MenuItem = {
 @Component({
   selector: 'app-header',
   templateUrl: 'header.html',
-  imports: [RouterLink, RouterLinkActive, SearchComponent],
+  imports: [RouterLink, RouterLinkActive, FormsModule, SearchComponent, CreditComponent],
   host: {
     '(window:scroll)': 'onScroll()',
-    '(document:keydown.escape)': 'close()',
+    '(document:keydown.escape)': 'close(); closeSearch()',
   },
 })
 export class HeaderComponent implements AfterViewInit, OnDestroy {
@@ -25,9 +28,16 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
 
   private overlay = viewChild.required<ElementRef<HTMLElement>>('overlay');
   private panel = viewChild.required<ElementRef<HTMLElement>>('panel');
+  private searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
+  whatsapp = whatsappLink();
+  socials = SOCIAL_LINKS;
+  socialHandle = SOCIAL_HANDLE;
 
   isOpen$ = signal(false);
   isScrolled$ = signal(false);
+  searchOpen$ = signal(false);
+  query = signal('');
 
   private url$ = toSignal(
     this.router.events.pipe(
@@ -51,7 +61,10 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
   private timeline?: gsap.core.Timeline;
   private navSub = this.router.events
     .pipe(filter((e) => e instanceof NavigationEnd))
-    .subscribe(() => this.close());
+    .subscribe(() => {
+      this.close();
+      this.closeSearch(true);
+    });
 
   ngAfterViewInit() {
     const panel = this.panel().nativeElement;
@@ -76,6 +89,34 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
     this.isOpen$.set(false);
     document.body.style.overflow = '';
     this.timeline?.timeScale(1.6).reverse();
+  }
+
+  /** First click opens the field, next ones search (or close it when empty) */
+  onSearchButton() {
+    if (!this.searchOpen$()) {
+      this.searchOpen$.set(true);
+      setTimeout(() => this.searchInput()?.nativeElement.focus(), 150);
+      return;
+    }
+    if (this.query().trim()) this.submitSearch();
+    else this.closeSearch();
+  }
+
+  submitSearch() {
+    const q = this.query().trim();
+    if (!q) return;
+    this.router.navigate(['/productos'], { queryParams: { q } });
+  }
+
+  closeSearch(clear = false) {
+    this.searchOpen$.set(false);
+    if (clear) this.query.set('');
+  }
+
+  /** Collapse when focus leaves the search and nothing was typed */
+  onSearchBlur(event: FocusEvent) {
+    const form = event.currentTarget as HTMLElement;
+    if (!form.contains(event.relatedTarget as Node) && !this.query().trim()) this.closeSearch();
   }
 
   onScroll() {

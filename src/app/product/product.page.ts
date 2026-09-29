@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer';
+import { whatsappLink } from '../../core/contact';
 import { ScrollTrigger, gsap, prefersReducedMotion } from '../../core/animations/gsap';
 import { RevealDirective } from '../../core/directives/reveal';
 import { PricePipe } from './price.pipe';
@@ -65,7 +66,7 @@ export class ProductPage implements OnDestroy {
     if (!product || !variation) return '#';
 
     const text = `Hola, deseo comprar ${product.name} (${this.labels[variation.attributes.presentation]} - ${variation.attributes.size}) que vi en su sitio web.`;
-    return `https://wa.me/?text=${encodeURIComponent(text)}`;
+    return whatsappLink(text);
   });
 
   shared = signal(false);

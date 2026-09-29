@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FooterComponent } from '../../components/footer/footer';
 import { PageHeroComponent } from '../../components/page-hero/page-hero';
 import { gsap, prefersReducedMotion } from '../../core/animations/gsap';
+import { CONTACT, SOCIAL_LINKS, formatPhone, mailLink, whatsappLink } from '../../core/contact';
 import { RevealDirective } from '../../core/directives/reveal';
 
 type ContactInfo = { icon: string; title: string; value: string; href?: string };
@@ -25,12 +26,14 @@ export class ContactPage {
     message: ['', [Validators.required, Validators.minLength(10)]],
   });
 
+  socials = SOCIAL_LINKS;
+
   status = signal<'idle' | 'sending' | 'sent'>('idle');
   openFaq = signal<number | null>(0);
 
   info: ContactInfo[] = [
-    { icon: 'bxl-whatsapp', title: 'WhatsApp', value: '+51 900 000 000', href: 'https://wa.me/?text=Hola%20Naturiix' },
-    { icon: 'bx-envelope', title: 'Correo', value: 'hola@naturiix.com', href: 'mailto:hola@naturiix.com' },
+    { icon: 'bxl-whatsapp', title: 'WhatsApp', value: formatPhone(), href: whatsappLink('Hola, me gustaría recibir información.') },
+    { icon: 'bx-envelope', title: 'Correo', value: CONTACT.email, href: mailLink('Consulta desde la web') },
     { icon: 'bx-map', title: 'Dirección', value: 'Av. Lorem Ipsum 123, Lima' },
     { icon: 'bx-time-five', title: 'Horario', value: 'Lun - Sáb · 9:00 a 19:00' },
   ];

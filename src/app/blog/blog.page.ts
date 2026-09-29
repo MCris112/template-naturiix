@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer';
 import { PageHeroComponent } from '../../components/page-hero/page-hero';
 import { gsap, prefersReducedMotion } from '../../core/animations/gsap';
+import { whatsappLink } from '../../core/contact';
 import { RevealDirective } from '../../core/directives/reveal';
 import { findProduct } from '../product/product.utils';
 import { BlogCategory, BlogPost, blogPosts } from './blog.data';
@@ -59,8 +60,7 @@ export class BlogPage {
   }
 
   orderLink(post: BlogPost) {
-    const text = `Hola, deseo comprar ${this.product(post.productSlug)?.name} que vi en su blog.`;
-    return `https://wa.me/?text=${encodeURIComponent(text)}`;
+    return whatsappLink(`Hola, deseo comprar ${this.product(post.productSlug)?.name} que vi en su blog.`);
   }
 
   shareLink(network: 'facebook' | 'whatsapp' | 'mail', post: BlogPost) {

@@ -7,14 +7,34 @@
             <img src="/logo_white.png" alt="Naturiix" class="w-full">
         </a>
 
-        @if (!isHome()) {
-            <app-search class="hidden w-full max-w-sm md:block" />
-        }
+        <div class="flex items-center gap-3">
+            <!-- Expanding search: same square style as the menu button, grows to the left -->
+            @if (!isHome()) {
+                <form (ngSubmit)="submitSearch()" (focusout)="onSearchBlur($event)" role="search"
+                    class="hidden h-12 items-center overflow-hidden border-2 border-accent backdrop-blur-sm transition-[width,background-color,box-shadow] duration-500 ease-out md:flex"
+                    [class]="searchOpen$()
+                        ? 'w-80 bg-primary-950/70 shadow-[0_0_0_4px_rgb(200_92_217/0.25)]'
+                        : 'w-12 bg-accent/10 hover:bg-accent'">
+                    <input #searchInput type="search" name="q" [(ngModel)]="query" placeholder="Buscar productos..."
+                        autocomplete="off" aria-label="Buscar productos" [tabindex]="searchOpen$() ? 0 : -1"
+                        class="h-full min-w-0 flex-1 bg-transparent text-white outline-none transition-opacity duration-300 placeholder:text-accent-200/60"
+                        [class]="searchOpen$() ? 'pl-4 opacity-100 delay-200' : 'w-0 pointer-events-none opacity-0'">
 
-        <button (click)="open()" aria-label="Abrir menú" [attr.aria-expanded]="isOpen$()"
-            class="group flex h-12 w-12 shrink-0 items-center justify-center border-2 border-accent bg-accent/10 text-3xl text-white backdrop-blur-sm transition ease-in hover:bg-accent">
-            <i class="bx bx-menu transition-transform duration-300 group-hover:scale-110"></i>
-        </button>
+                    <button type="button" (click)="onSearchButton()"
+                        [attr.aria-label]="searchOpen$() ? 'Buscar' : 'Abrir búsqueda'"
+                        class="group flex h-full w-11 shrink-0 items-center justify-center text-2xl text-white transition-colors"
+                        [class]="searchOpen$() ? 'hover:bg-accent' : ''">
+                        <i class="bx transition-transform duration-300 group-hover:scale-110"
+                            [class]="searchOpen$() && query().trim() ? 'bx-right-arrow-alt' : 'bx-search'"></i>
+                    </button>
+                </form>
+            }
+
+            <button (click)="open()" aria-label="Abrir menú" [attr.aria-expanded]="isOpen$()"
+                class="group flex h-12 w-12 shrink-0 items-center justify-center border-2 border-accent bg-accent/10 text-3xl text-white backdrop-blur-sm transition-colors ease-in hover:bg-accent">
+                <i class="bx bx-menu transition-transform duration-300 group-hover:scale-110"></i>
+            </button>
+        </div>
     </div>
 </header>
 
@@ -80,11 +100,16 @@
         <div data-menu-item>
             <span class="mb-2 block text-sm text-accent-300">Encuéntranos también en</span>
             <div class="flex items-center gap-4 text-4xl text-primary">
-                <a href="#" aria-label="Facebook" class="transition hover:-translate-y-1 hover:text-accent"><i class="bx bxl-facebook-square"></i></a>
-                <a href="#" aria-label="Instagram" class="transition hover:-translate-y-1 hover:text-accent"><i class="bx bxl-instagram"></i></a>
-                <a href="#" aria-label="WhatsApp" class="transition hover:-translate-y-1 hover:text-accent"><i class="bx bxl-whatsapp"></i></a>
-                <span class="text-2xl">&#64;naturiix</span>
+                @for (social of socials; track social.url) {
+                    <a [href]="social.url" target="_blank" rel="noopener" [attr.aria-label]="social.label" [title]="social.label" class="transition hover:-translate-y-1 hover:text-accent"><i class="bx" [class]="social.icon"></i></a>
+                }
+                <a [href]="whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp" class="transition hover:-translate-y-1 hover:text-accent"><i class="bx bxl-whatsapp"></i></a>
+                <span class="text-2xl">{{ socialHandle }}</span>
             </div>
+        </div>
+
+        <div data-menu-item class="border-t border-neutral-200 pt-4">
+            <app-credit placement="side_menu" tone="dark" />
         </div>
     </div>
 </aside>

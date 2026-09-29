@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SOCIAL_LINKS, whatsappLink } from '../../core/contact';
+import { CreditComponent } from '../credit/credit';
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink],
+  imports: [RouterLink, CreditComponent],
   template: `
     <footer class="bg-accent-800 text-white">
       <div class="container flex flex-col items-center justify-between gap-8 py-10 md:flex-row">
@@ -23,15 +25,19 @@ import { RouterLink } from '@angular/router';
 
       <div class="container flex flex-col items-center gap-4 border-t border-accent-400/40 py-6">
         <div class="flex gap-4 text-3xl">
-          <a href="#" aria-label="Facebook" class="transition hover:-translate-y-1 hover:text-accent-200"><i class="bx bxl-facebook-square"></i></a>
-          <a href="#" aria-label="Instagram" class="transition hover:-translate-y-1 hover:text-accent-200"><i class="bx bxl-instagram"></i></a>
-          <a href="#" aria-label="WhatsApp" class="transition hover:-translate-y-1 hover:text-accent-200"><i class="bx bxl-whatsapp"></i></a>
+          @for (social of socials; track social.url) {
+              <a [href]="social.url" target="_blank" rel="noopener" [attr.aria-label]="social.label" [title]="social.label" class="transition hover:-translate-y-1 hover:text-accent-200"><i class="bx" [class]="social.icon"></i></a>
+          }
+          <a [href]="whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp" class="transition hover:-translate-y-1 hover:text-accent-200"><i class="bx bxl-whatsapp"></i></a>
         </div>
         <p class="text-xs text-accent-200">© {{ year }} Naturiix · Plantilla de demostración</p>
+        <app-credit placement="footer" />
       </div>
     </footer>
   `,
 })
 export class FooterComponent {
   year = new Date().getFullYear();
+  whatsapp = whatsappLink();
+  socials = SOCIAL_LINKS;
 }

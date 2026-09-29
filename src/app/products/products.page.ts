@@ -10,6 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CreditComponent } from '../../components/credit/credit';
 import { gsap, prefersReducedMotion } from '../../core/animations/gsap';
 import { PricePipe } from '../product/price.pipe';
 import { Product, ProductPresentation } from '../product/product.types';
@@ -18,7 +19,7 @@ import { getVariations, presentationLabels, searchProducts } from '../product/pr
 @Component({
   selector: 'products-page',
   templateUrl: 'products.page.html',
-  imports: [RouterLink, PricePipe],
+  imports: [RouterLink, PricePipe, CreditComponent],
   host: {
     '(document:keydown)': 'onKey($event)',
     '(window:resize)': 'layout(true)',

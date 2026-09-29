@@ -1,0 +1,8 @@
+# Naturiix is a portfolio demo and must not appear in search results.
+#
+# Indexing is blocked with <meta name="robots" content="noindex"> in index.html.
+# Crawling is intentionally NOT disallowed here: search engines must be able to fetch
+# the page to read that noindex rule. A "Disallow: /" would hide the rule and the URL
+# could still end up indexed from external links.
+User-agent: *
+Allow: /
