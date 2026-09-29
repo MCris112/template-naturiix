@@ -1,0 +1,105 @@
+<app-page-hero title="Testimonios" image="/assets/images/bg_products.jpg"
+    subtitle="Lo que dicen nuestros clientes. Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+
+<!-- Featured slider -->
+<section class="bg-white py-20">
+    <div class="container max-w-5xl" reveal>
+        @let featured = testimonials[current()];
+        @let featuredProduct = product(featured.productSlug);
+
+        <div #slide class="grid items-center gap-10 md:grid-cols-[40%_60%]">
+            <a [routerLink]="['/productos', featured.productSlug]" data-slide-image
+                class="group relative flex justify-center bg-neutral-100 p-8">
+                <span class="absolute inset-6 rounded-full bg-primary-100 blur-2xl"></span>
+                <img [src]="featuredProduct?.image" [alt]="featuredProduct?.name"
+                    class="relative h-72 w-auto object-contain drop-shadow-xl transition-transform duration-500 group-hover:-rotate-3 group-hover:scale-105">
+            </a>
+
+            <div class="flex flex-col gap-5">
+                <i data-slide-item class="bx bxs-quote-alt-left text-6xl text-accent-200"></i>
+
+                <blockquote data-slide-item class="text-2xl leading-relaxed text-neutral-800 md:text-3xl">
+                    {{ featured.quote }}
+                </blockquote>
+
+                <div data-slide-item class="flex text-xl text-amber-400" [attr.aria-label]="featured.rating + ' de 5 estrellas'">
+                    @for (star of stars; track star) {
+                        <i class="bx" [class]="star <= featured.rating ? 'bxs-star' : 'bx-star'"></i>
+                    }
+                </div>
+
+                <div data-slide-item class="flex items-center gap-4">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-full bg-accent font-bold text-white">
+                        {{ initials(featured.name) }}
+                    </span>
+                    <div>
+                        <p class="font-bold">{{ featured.name }}</p>
+                        <p class="text-sm text-neutral-500">{{ featured.city }} · compró {{ featuredProduct?.name }}</p>
+                    </div>
+                </div>
+
+                <div data-slide-item class="mt-2 flex items-center gap-4">
+                    <button type="button" (click)="go(-1); restart()" aria-label="Anterior"
+                        class="flex h-11 w-11 items-center justify-center border-2 border-accent text-2xl text-accent transition hover:bg-accent hover:text-white">
+                        <i class="bx bx-chevron-left"></i>
+                    </button>
+                    <button type="button" (click)="go(1); restart()" aria-label="Siguiente"
+                        class="flex h-11 w-11 items-center justify-center border-2 border-accent text-2xl text-accent transition hover:bg-accent hover:text-white">
+                        <i class="bx bx-chevron-right"></i>
+                    </button>
+
+                    <div class="ml-2 flex gap-2">
+                        @for (t of testimonials; track t.id; let i = $index) {
+                            <button type="button" (click)="pick(i)" [attr.aria-label]="'Testimonio ' + (i + 1)"
+                                class="h-2 transition-all duration-500"
+                                [class]="i === current() ? 'w-8 bg-accent' : 'w-2 bg-accent-200 hover:bg-accent-400'"></button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- All reviews -->
+<section class="bg-neutral-100 py-20">
+    <div class="container">
+        <h2 class="mb-12 text-center text-4xl text-primary-400" reveal>Más opiniones</h2>
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" reveal [revealStagger]="0.1">
+            @for (t of testimonials; track t.id) {
+                <article class="group flex flex-col gap-4 bg-white p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <div class="flex text-amber-400">
+                            @for (star of stars; track star) {
+                                <i class="bx" [class]="star <= t.rating ? 'bxs-star' : 'bx-star'"></i>
+                            }
+                        </div>
+                        <i class="bx bxs-quote-alt-right text-3xl text-accent-100 transition-colors group-hover:text-accent-300"></i>
+                    </div>
+
+                    <p class="flex-1 leading-relaxed text-neutral-700">{{ t.quote }}</p>
+
+                    <div class="flex items-center justify-between border-t border-neutral-100 pt-4">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-sm font-bold text-white">
+                                {{ initials(t.name) }}
+                            </span>
+                            <div>
+                                <p class="font-bold">{{ t.name }}</p>
+                                <p class="text-xs text-neutral-500">{{ t.city }}</p>
+                            </div>
+                        </div>
+
+                        <a [routerLink]="['/productos', t.productSlug]" class="flex items-center gap-2 text-sm text-accent hover:underline">
+                            <img [src]="product(t.productSlug)?.image" alt="" class="h-10 w-auto transition-transform group-hover:-rotate-6">
+                            {{ product(t.productSlug)?.name }}
+                        </a>
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+</section>
+
+<app-footer />

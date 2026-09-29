@@ -1,0 +1,196 @@
+@if (product(); as product) {
+@if (variation(); as variation) {
+
+<!-- Hero -->
+<section #hero class="relative overflow-hidden bg-primary-950 bg-cover bg-fixed bg-center pt-28 pb-16 md:pb-24"
+    style="background-image: url('/assets/images/bg_products.jpg');">
+    <div class="absolute inset-0 bg-black/30"></div>
+
+    <div class="relative z-2 container max-w-5xl">
+        <div class="mb-0 flex justify-end">
+            <button type="button" (click)="share()" data-hero="item"
+                class="flex items-center gap-2 bg-accent px-5 py-3 text-white transition hover:bg-accent-900">
+                <i class="bx text-xl" [class]="shared() ? 'bx-check' : 'bx-share-alt'"></i>
+                {{ shared() ? '¡Enlace copiado!' : 'Compartir' }}
+            </button>
+        </div>
+
+        <article data-hero="card" class="grid bg-white shadow-2xl md:grid-cols-[42%_58%]">
+            <div class="flex flex-col items-center justify-center gap-6 bg-neutral-100 p-6 md:p-10">
+                <figure data-hero="image">
+                    <img #image [src]="variation.image ?? product.image" [alt]="product.name"
+                        class="max-h-[42svh] w-auto object-contain drop-shadow-[0_18px_22px_rgb(0_0_0/0.18)] md:max-h-[52svh]">
+                </figure>
+
+                <a [href]="orderLink()" target="_blank" rel="noopener" data-hero="item"
+                    class="btn btn-accent flex w-full max-w-xs items-center justify-center gap-2 text-lg"
+                    [class.pointer-events-none]="!variation.inStock" [class.opacity-50]="!variation.inStock">
+                    <i class="bx bxl-whatsapp text-2xl"></i> Pedir ahora
+                </a>
+            </div>
+
+            <div class="flex flex-col justify-center gap-5 p-6 md:p-12">
+                <nav data-hero="item" class="text-sm text-neutral-500" aria-label="Ruta">
+                    <a routerLink="/productos" class="hover:text-accent">Productos</a>
+                    <span class="mx-1">/</span>
+                    <span class="text-accent">{{ product.name }}</span>
+                </nav>
+
+                <h1 data-hero="item" class="text-4xl font-bold text-primary-400 md:text-6xl">{{ product.name }}</h1>
+
+                <p data-hero="item" class="text-sm leading-relaxed text-neutral-700">{{ product.description }}</p>
+
+                @if (variations().length > 1) {
+                    <div data-hero="item" class="flex flex-col gap-2">
+                        <span class="text-sm text-neutral-500">Presentación</span>
+                        <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Presentación">
+                            @for (option of variations(); track option.id) {
+                                <button type="button" role="radio" [attr.aria-checked]="option === variation"
+                                    (click)="this.variation.set(option)"
+                                    class="relative border-2 px-4 py-2 text-sm transition-all duration-300"
+                                    [class]="option === variation
+                                        ? 'border-accent bg-accent text-white shadow-lg shadow-accent/30'
+                                        : 'border-accent-200 text-accent hover:border-accent'">
+                                    {{ labels[option.attributes.presentation] }} · {{ option.attributes.size }}
+                                    @if (!option.inStock) {
+                                        <span class="ml-1 text-xs opacity-70">(agotado)</span>
+                                    }
+                                </button>
+                            }
+                        </div>
+                    </div>
+                } @else {
+                    <p data-hero="item" class="text-sm">
+                        Contiene {{ variation.attributes.size }} · {{ labels[variation.attributes.presentation] }}
+                    </p>
+                }
+
+                <div #price data-hero="item" class="flex flex-wrap items-end gap-x-4 gap-y-1">
+                    <div class="flex flex-col">
+                        @if (variation.price.discount) {
+                            <span class="text-lg text-accent-300 line-through">{{ variation.price | price:'regular' }}</span>
+                        }
+                        <span class="text-5xl font-bold leading-none md:text-7xl">{{ variation.price | price }}</span>
+                    </div>
+
+                    @if (variation.price.discount) {
+                        <span class="mb-1 bg-primary-100 px-2 py-1 text-sm font-bold text-primary-700">-{{ variation.price.discount }}%</span>
+                    }
+                </div>
+
+                <p data-hero="item" class="flex items-center gap-2 text-sm"
+                    [class]="variation.inStock ? 'text-primary-600' : 'text-red-600'">
+                    <i class="bx text-lg" [class]="variation.inStock ? 'bx-check-circle' : 'bx-x-circle'"></i>
+                    {{ variation.inStock ? 'Disponible' : 'Agotado por el momento' }}
+                </p>
+            </div>
+        </article>
+    </div>
+</section>
+
+<!-- Information -->
+<section class="bg-neutral-100 py-16">
+    <div class="container grid max-w-5xl gap-10 md:grid-cols-[1fr_240px]">
+        <div class="flex flex-col gap-14">
+            <div id="que-es" class="scroll-mt-28" reveal>
+                <h2 class="mb-4 text-3xl text-primary-400">¿Qué es?</h2>
+                <div class="flex flex-col gap-3 leading-relaxed text-neutral-700" [innerHTML]="variation.content.whatIs"></div>
+            </div>
+
+            <div id="contenido" class="scroll-mt-28" reveal>
+                <h2 class="mb-4 text-3xl text-primary-400">Contenido</h2>
+                <ul class="grid gap-3 sm:grid-cols-2" reveal="fade" [revealStagger]="0.08">
+                    @for (item of variation.content.content; track item) {
+                        <li class="flex items-center gap-3 border-l-4 border-primary-400 bg-white px-4 py-3 shadow-sm">
+                            <i class="bx bx-leaf text-xl text-primary-500"></i> {{ item }}
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <div id="para-que-sirve" class="scroll-mt-28" reveal>
+                <h2 class="mb-4 text-3xl text-primary-400">¿Para qué sirve?</h2>
+                <ul class="flex flex-col gap-3" reveal="left" [revealStagger]="0.08">
+                    @for (item of variation.content.whatIsUsedFor; track item) {
+                        <li class="flex items-center gap-3">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center bg-primary-500 text-white"><i class="bx bx-check"></i></span>
+                            {{ item }}
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <div id="tener-en-cuenta" class="scroll-mt-28" reveal>
+                <h2 class="mb-4 text-3xl text-red-500">Tener en cuenta</h2>
+                <ul class="flex flex-col gap-3" reveal="left" [revealStagger]="0.08">
+                    @for (item of variation.content.haveInMind; track item) {
+                        <li class="flex items-center gap-3">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center bg-red-500 text-white"><i class="bx bx-x"></i></span>
+                            {{ item }}
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <div id="presentacion" class="scroll-mt-28" reveal>
+                <h2 class="mb-4 text-3xl text-primary-400">Presentación</h2>
+                <div class="flex flex-wrap gap-3">
+                    @for (option of variations(); track option.id) {
+                        <div class="flex items-center gap-3 bg-white px-4 py-3 shadow-sm">
+                            <i class="bx text-2xl text-accent" [class]="option.attributes.presentation === 'capsules' ? 'bx-capsule' : 'bx-bowl-hot'"></i>
+                            <span>{{ labels[option.attributes.presentation] }} ({{ option.attributes.size }})</span>
+                            <strong class="text-accent">{{ option.price | price }}</strong>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Side menu -->
+        <aside class="order-first md:order-none" reveal="right">
+            <nav class="sticky top-24 flex flex-col bg-accent-900 p-5 text-white shadow-lg" aria-label="Información del producto">
+                <h3 class="mb-2 text-xl text-accent-200">Información</h3>
+                <hr class="mb-3 border-accent-300/50">
+
+                @for (section of sections; track section.id) {
+                    <button type="button" (click)="scrollTo(section.id)"
+                        class="relative py-1.5 pl-4 text-left text-sm transition-all duration-300"
+                        [class]="activeSection() === section.id ? 'translate-x-1 font-bold text-white' : 'text-accent-200 hover:text-white'">
+                        <span class="absolute top-1/2 left-0 h-2 w-2 -translate-y-1/2 rounded-full bg-accent-300 transition-transform duration-300"
+                            [class]="activeSection() === section.id ? 'scale-100' : 'scale-0'"></span>
+                        {{ section.title }}
+                    </button>
+                }
+
+                <a [href]="orderLink()" target="_blank" rel="noopener"
+                    class="mt-4 hidden items-center justify-center gap-2 bg-white py-2 text-accent transition hover:bg-accent-100 md:flex">
+                    <i class="bx bxl-whatsapp text-xl"></i> Pedir ahora
+                </a>
+            </nav>
+        </aside>
+    </div>
+</section>
+
+<!-- Similar products -->
+@if (similar().length) {
+    <section class="bg-white py-16">
+        <div class="container max-w-5xl">
+            <h2 class="mb-8 text-3xl text-primary-400" reveal>Productos similares</h2>
+
+            <div class="grid grid-cols-2 gap-6 md:grid-cols-4" reveal [revealStagger]="0.1">
+                @for (item of similar(); track item.id) {
+                    <a [routerLink]="['/productos', item.slug]"
+                        class="group flex flex-col items-center gap-3 bg-neutral-100 p-4 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+                        <img [src]="item.image" [alt]="item.name" loading="lazy"
+                            class="h-44 w-auto object-contain transition-transform duration-500 group-hover:scale-105">
+                        <span class="text-lg group-hover:text-accent">{{ item.name }}</span>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<app-footer />
+}
+}

@@ -1,0 +1,120 @@
+<app-page-hero title="Blog" image="/assets/images/blog/big_camu_camu.jpg"
+    subtitle="Consejos, novedades y todo sobre nuestros productos. Lorem ipsum dolor sit amet." />
+
+<section class="bg-neutral-100 py-16">
+    <div class="container grid gap-10 lg:grid-cols-[1fr_300px]">
+        <!-- Posts -->
+        <div>
+            @if (categoria() || etiqueta()) {
+                <p class="mb-6 flex flex-wrap items-center gap-2 text-neutral-600">
+                    Mostrando:
+                    <strong class="bg-accent px-3 py-1 text-sm text-white">{{ categoria() ?? etiqueta() }}</strong>
+                    <a routerLink="/blog" class="text-sm text-accent underline">Quitar filtro</a>
+                </p>
+            }
+
+            <div #list class="flex flex-col gap-12" reveal [revealStagger]="0.15">
+                @for (post of posts(); track post.id) {
+                    @let postProduct = product(post.productSlug);
+
+                    <article class="relative md:pl-12">
+                        <!-- Share buttons, like the original side icons -->
+                        <div class="absolute top-0 left-0 z-2 flex md:flex-col">
+                            <a [href]="shareLink('facebook', post)" target="_blank" rel="noopener" aria-label="Compartir en Facebook"
+                                class="flex h-10 w-10 items-center justify-center bg-[#1877f2] text-xl text-white transition hover:w-12">
+                                <i class="bx bxl-facebook"></i>
+                            </a>
+                            <a [href]="shareLink('whatsapp', post)" target="_blank" rel="noopener" aria-label="Compartir en WhatsApp"
+                                class="flex h-10 w-10 items-center justify-center bg-[#25d366] text-xl text-white transition hover:w-12">
+                                <i class="bx bxl-whatsapp"></i>
+                            </a>
+                            <a [href]="shareLink('mail', post)" aria-label="Compartir por correo"
+                                class="flex h-10 w-10 items-center justify-center bg-orange-400 text-xl text-white transition hover:w-12">
+                                <i class="bx bx-envelope"></i>
+                            </a>
+                        </div>
+
+                        <div class="group bg-white p-5 shadow-md transition-shadow duration-500 hover:shadow-2xl md:p-6">
+                            <!-- Promo cover -->
+                            <a [routerLink]="['/productos', post.productSlug]"
+                                class="relative grid min-h-72 grid-cols-[40%_60%] items-center overflow-hidden bg-linear-to-br p-6"
+                                [class]="covers[post.cover]">
+                                <img src="/logo_white.png" alt="" class="absolute top-4 left-4 w-20 opacity-90">
+                                <span class="absolute -right-10 -bottom-10 h-48 w-48 rounded-full bg-white/10 transition-transform duration-700 group-hover:scale-150"></span>
+
+                                <img [src]="postProduct?.image" [alt]="postProduct?.name" loading="lazy"
+                                    class="relative mt-8 h-56 w-auto justify-self-center object-contain drop-shadow-2xl transition-transform duration-700 group-hover:-rotate-6 group-hover:scale-110">
+
+                                <div class="relative text-right text-white">
+                                    <p class="text-3xl font-bold uppercase leading-tight md:text-4xl">{{ post.headline }}</p>
+                                    <ul class="mt-4 inline-flex flex-col gap-1 border-2 border-white/40 p-3 text-left text-sm font-bold uppercase">
+                                        @for (bullet of post.bullets; track bullet) {
+                                            <li>{{ bullet }}</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </a>
+
+                            <div class="mt-5 flex flex-wrap items-center gap-3 text-xs text-neutral-500">
+                                <a routerLink="/blog" [queryParams]="{ categoria: post.category }" class="bg-primary-100 px-2 py-1 text-primary-700 hover:bg-primary-200">{{ post.category }}</a>
+                                <time [attr.datetime]="post.date">{{ post.date }}</time>
+                            </div>
+
+                            <h2 class="mt-2 text-2xl text-accent transition-colors group-hover:text-accent-900">{{ post.title }}</h2>
+                            <p class="mt-3 text-sm leading-relaxed text-neutral-700">{{ post.excerpt }}</p>
+
+                            <div class="mt-6 flex flex-wrap justify-end gap-4">
+                                <a [routerLink]="['/productos', post.productSlug]" class="btn btn-accent-outline">Más información</a>
+                                <a [href]="orderLink(post)" target="_blank" rel="noopener" class="btn btn-accent">Pedir ahora</a>
+                            </div>
+                        </div>
+                    </article>
+                } @empty {
+                    <p class="py-20 text-center text-neutral-500">No hay publicaciones con este filtro.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside reveal="right">
+            <div class="sticky top-24 flex flex-col bg-accent-900 text-white shadow-lg">
+                <h3 class="bg-accent-800 px-5 py-3 text-lg">Categorías</h3>
+                <div class="grid grid-cols-2 gap-2 p-5 text-sm">
+                    @for (category of categories; track category) {
+                        <a routerLink="/blog" [queryParams]="{ categoria: category }"
+                            class="transition hover:translate-x-1 hover:text-white"
+                            [class]="categoria() === category ? 'font-bold text-white' : 'text-accent-200'">{{ category }}</a>
+                    }
+                </div>
+
+                <h3 class="bg-accent-800 px-5 py-3 text-lg">Etiquetas</h3>
+                <div class="flex flex-wrap gap-2 p-5 text-xs">
+                    @for (tag of tags; track tag) {
+                        <a routerLink="/blog" [queryParams]="{ etiqueta: tag }"
+                            class="border px-2 py-1 transition hover:border-white hover:text-white"
+                            [class]="etiqueta() === tag ? 'border-white bg-white text-accent' : 'border-accent-400 text-accent-200'">{{ tag }}</a>
+                    }
+                </div>
+
+                <div class="border-t border-accent-700 p-5 text-center">
+                    <p class="mb-1 uppercase">Suscríbete para recibir notificaciones</p>
+
+                    @if (subscribed()) {
+                        <p class="mt-3 flex items-center justify-center gap-2 text-sm text-primary-200">
+                            <i class="bx bx-check-circle text-xl"></i> ¡Gracias por suscribirte!
+                        </p>
+                    } @else {
+                        <form (ngSubmit)="subscribe()" class="mt-3 flex flex-col gap-2">
+                            <label for="blog-email" class="text-xs text-accent-200">Correo electrónico</label>
+                            <input id="blog-email" type="email" name="email" required [ngModel]="email()" (ngModelChange)="email.set($event)"
+                                class="bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:ring-2 focus:ring-accent-300">
+                            <button type="submit" class="btn bg-accent text-sm text-white transition hover:bg-accent-600">Suscribirme</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<app-footer />

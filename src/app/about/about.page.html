@@ -1,0 +1,107 @@
+<app-page-hero title="¿Quiénes somos?" image="/assets/images/bg_home.jpg"
+    subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus suspendisse lectus tortor." />
+
+<!-- Intro -->
+<section class="bg-white py-20">
+    <div class="container max-w-4xl text-center" reveal>
+        <img src="/logo.png" alt="Naturiix" class="mx-auto mb-8 w-48">
+        <p class="text-xl leading-relaxed text-neutral-700 md:text-2xl">
+            <strong class="text-primary-500">Naturiix</strong> nace con el objetivo de lorem ipsum dolor sit amet,
+            consectetur adipiscing elit. Integer nec odio, praesent libero, sed cursus ante dapibus diam, sed nisi
+            nulla quis sem at nibh elementum imperdiet.
+        </p>
+    </div>
+</section>
+
+<!-- Vision / Mission -->
+<section class="bg-neutral-100 py-20">
+    <div class="container flex flex-col gap-20">
+        <div class="grid items-center gap-10 md:grid-cols-2">
+            <figure class="group overflow-hidden shadow-xl" reveal="left">
+                <img src="/assets/images/blog/big_camu_camu.jpg" alt="Visión" loading="lazy"
+                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-105">
+            </figure>
+            <div reveal="right">
+                <span class="text-sm tracking-widest text-accent uppercase">Hacia dónde vamos</span>
+                <h2 class="mt-2 mb-4 text-4xl text-primary-400">Visión</h2>
+                <p class="leading-relaxed text-neutral-700">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ligula massa, varius a, semper
+                    congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non
+                    fermentum diam nisl sit amet erat.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid items-center gap-10 md:grid-cols-2">
+            <div class="md:order-first" reveal="left">
+                <span class="text-sm tracking-widest text-accent uppercase">Lo que hacemos</span>
+                <h2 class="mt-2 mb-4 text-4xl text-primary-400">Misión</h2>
+                <p class="mb-4 leading-relaxed text-neutral-700">
+                    Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue.
+                    Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue.
+                </p>
+                <p class="leading-relaxed text-neutral-700">
+                    Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit
+                    sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.
+                </p>
+            </div>
+            <figure class="group order-first overflow-hidden shadow-xl md:order-none" reveal="right">
+                <img src="/assets/images/bg_products.jpg" alt="Misión" loading="lazy"
+                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-105">
+            </figure>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="bg-primary-700 py-16 text-white">
+    <div class="container grid grid-cols-2 gap-8 text-center md:grid-cols-4" reveal [revealStagger]="0.12">
+        @for (stat of stats; track stat.label) {
+            <div>
+                <p class="text-4xl font-bold md:text-6xl">
+                    <span [countUp]="stat.value"></span><span class="text-primary-300">{{ stat.suffix }}</span>
+                </p>
+                <p class="mt-2 text-primary-200">{{ stat.label }}</p>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Services -->
+<section class="bg-white py-20">
+    <div class="container">
+        <div class="mb-12 text-center" reveal>
+            <span class="text-sm tracking-widest text-accent uppercase">Te acompañamos</span>
+            <h2 class="mt-2 text-4xl text-primary-400 md:text-5xl">Nuestros servicios</h2>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" reveal [revealStagger]="0.1">
+            @for (service of services; track service.title) {
+                <article class="group relative overflow-hidden border border-neutral-200 bg-white p-8 transition-all duration-500 hover:-translate-y-2 hover:border-accent hover:shadow-2xl">
+                    <span class="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-accent transition-transform duration-500 group-hover:scale-x-100"></span>
+                    <span class="mb-5 flex h-16 w-16 items-center justify-center bg-accent-50 text-4xl text-accent transition-all duration-500 group-hover:rotate-6 group-hover:bg-accent group-hover:text-white">
+                        <i class="bx" [class]="service.icon"></i>
+                    </span>
+                    <h3 class="mb-2 text-xl font-bold">{{ service.title }}</h3>
+                    <p class="text-sm leading-relaxed text-neutral-600">{{ service.text }}</p>
+                </article>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="relative overflow-hidden bg-accent-800 py-16 text-white">
+    <div class="container flex flex-col items-center justify-between gap-6 text-center md:flex-row md:text-left" reveal>
+        <div>
+            <h2 class="text-3xl md:text-4xl">¿Listo para cuidar tu salud?</h2>
+            <p class="mt-2 text-accent-200">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a routerLink="/productos" class="btn border-white bg-white text-accent transition hover:bg-accent-100">Ver productos</a>
+            <a routerLink="/contacto" class="btn btn-light-outline">Contáctanos</a>
+        </div>
+    </div>
+</section>
+
+<app-footer />

@@ -1,63 +1,52 @@
-<main class="relative w-full h-screen bg-center bg-cover" style="background-image: url('/assets/images/bg_home.jpg');">
-    <div class="absolute top-0 left-0 bg-black w-full h-full opacity-60"></div>
-    <div class="relative z-2 container pt-40">
-        <div class="w-full">
-            <div class="flex flex-col gap-3"> 
-                <figure class="mb-6 w-[300px] max-w-3/4 mx-auto">
-                    <img class="w-full" src="/logo.png" alt="Logo template Figure">
-                </figure>
+<main #hero class="relative min-h-svh w-full overflow-hidden bg-primary-950 bg-cover bg-center md:h-svh"
+    style="background-image: url('/assets/images/bg_home.jpg');">
+    <div class="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/40"></div>
 
-                <p class="text-justify mb-3 text-white">Ofrecemos productos especializados para el cuidado de tu cuerpo que se merece lo mejor.</p>
+    <div class="relative z-2 container grid h-full grid-cols-1 md:grid-cols-2 md:gap-10">
+        <!-- Brand / intro -->
+        <div class="flex flex-col justify-center gap-5 pt-28 pb-10 md:py-0">
+            <p data-intro="tagline" class="text-2xl text-primary-300 md:text-3xl">Lo mejor está en</p>
 
-                <form class="hidden md:flex border-2 border-accent">
-                    <input type="text" class="text-accent">
-                    <button class="w-10 h-10 bg-accent text-white"><i class='bx bx-search-alt-2' ></i></button>
-                </form>
+            <figure data-intro="logo" class="w-[420px] max-w-full">
+                <img class="w-full drop-shadow-[0_8px_24px_rgb(0_0_0/0.45)]" src="/logo_white.png" alt="Naturiix">
+            </figure>
 
-                <div class="flex w-full">
-                    <button class="btn btn-accent basis-1/2">
-                        Ver Productos
-                    </button>
+            <p data-intro="item" class="max-w-md text-lg text-primary-200 md:text-xl">
+                Ofrecemos productos especializados para el cuidado de tu cuerpo que se merece lo mejor.
+            </p>
 
-                    <button class="btn btn-accent-outline basis-1/2">
-                        Acerca de nosotros
-                    </button>
+            <app-search data-intro="item" class="max-w-md" />
+
+            <div data-intro="item" class="flex max-w-md flex-wrap gap-4">
+                <a routerLink="/productos" class="btn btn-accent grow basis-40 text-center">Ver productos</a>
+                <a routerLink="/quienes-somos" class="btn btn-light-outline grow basis-40 text-center">Acerca de nosotros</a>
+            </div>
+        </div>
+
+        <!-- Sliding product columns -->
+        <div class="relative -mx-[5vw] flex flex-col gap-4 pb-10 md:mx-0 md:h-svh md:flex-row md:gap-8 md:pb-0 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)] md:[mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)]">
+            @for (column of columns; track $index; let col = $index) {
+                <div data-intro="column" class="overflow-hidden md:flex-1"
+                    (mouseenter)="setSpeed(col, 0.15)" (mouseleave)="setSpeed(col, 1)">
+                    <div #track class="flex w-max md:w-full md:flex-col">
+                        <!-- rendered twice for a seamless loop -->
+                        @for (copy of [0, 1]; track copy) {
+                            @for (product of column; track product.id) {
+                                <a [routerLink]="['/productos', product.slug]" [attr.aria-hidden]="copy === 1"
+                                    [attr.tabindex]="copy === 1 ? -1 : null"
+                                    class="group relative block w-32 shrink-0 px-3 md:w-full md:px-6 md:py-5">
+                                    <img [src]="product.image" [alt]="product.name" loading="lazy"
+                                        class="mx-auto h-44 w-auto object-contain opacity-75 transition-all duration-500 group-hover:scale-105 group-hover:opacity-100 md:h-[34vh]">
+
+                                    <span class="absolute top-1/2 left-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 scale-0 items-center justify-center rounded-full bg-accent/90 text-center text-sm text-white shadow-xl transition-transform duration-300 group-hover:scale-100 md:h-28 md:w-28">
+                                        Ver<br>producto
+                                    </span>
+                                </a>
+                            }
+                        }
+                    </div>
                 </div>
-            </div>
-
-            <div class="text-white py-6">
-                <style>
-    swiper-container::part(wrapper) {
-      transition-timing-function: linear !important;
-    }
-  </style>
-            <swiper-container init="false" swiper [config]="config">
-                @for (item of products; track $index) {
-                    <swiper-slide>
-                        <img [src]="item">
-                    </swiper-slide>
-                }
-            </swiper-container>
-            </div>
-
-            <div class="text-white py-6">
-                <style>
-    swiper-container::part(wrapper) {
-      transition-timing-function: linear !important;
-    }
-  </style>
-            <swiper-container init="false" swiper [config]="config2">
-                @for (item of products2; track $index) {
-                    <swiper-slide>
-                        <img [src]="item">
-                    </swiper-slide>
-                }
-            </swiper-container>
-            </div>  
+            }
         </div>
     </div>
 </main>
-
-
-
-<app-header />

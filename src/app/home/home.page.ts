@@ -1,65 +1,73 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-import { SwiperDirective } from '../../core/directives/swiper';
-import { SwiperOptions } from 'swiper/types';
-import { HeaderComponent } from '../../components/header/header';
+import { AfterViewInit, Component, ElementRef, OnDestroy, viewChild, viewChildren } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { SearchComponent } from '../../components/search/search';
+import { gsap } from '../../core/animations/gsap';
+import { products } from '../product/product.data';
 
 @Component({
-    selector: 'home-page',
-    templateUrl: 'home.page.html',
-    imports: [
-        SwiperDirective,
-        HeaderComponent
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  selector: 'home-page',
+  templateUrl: 'home.page.html',
+  imports: [RouterLink, SearchComponent],
 })
+export class HomePage implements AfterViewInit, OnDestroy {
+  private hero = viewChild.required<ElementRef<HTMLElement>>('hero');
+  private tracks = viewChildren<ElementRef<HTMLElement>>('track');
 
-export class HomePage implements OnInit {
+  // Split the catalog into the two sliding columns
+  columns = [
+    products.filter((_, i) => i % 2 === 0),
+    products.filter((_, i) => i % 2 === 1),
+  ];
 
-    config: SwiperOptions|any = {
-         slidesPerView: 4,          // show 4 items at once
-        spaceBetween: 20,          // adjust spacing if needed
-        loop: true,                // infinite loop
-        freeMode: true,            // allow smooth free scrolling
-        speed: 5000,               // higher = slower continuous scroll
-        autoplay: {
-            delay: 1,                // no pause, keeps moving
-            disableOnInteraction: false,
-        },
-        freeModeMomentum: false,   // prevent snapping
-    }
+  private ctx?: gsap.Context;
+  private mm?: gsap.MatchMedia;
+  private loops: gsap.core.Tween[] = [];
 
-    config2: SwiperOptions | any = {
-  slidesPerView: 4,          // show 4 items at once
-  spaceBetween: 20,          // adjust spacing if needed
-  loop: true,                 // infinite loop
-  freeMode: true,             // allow smooth free scrolling
-  speed: 5000,                // higher = slower continuous scroll
-  autoplay: {
-    delay: 1,                 // no pause, keeps moving
-    disableOnInteraction: false,
-    reverseDirection: true,   // 👈 this flips the direction
-  },
-  freeModeMomentum: false,    // prevent snapping
-};
+  ngAfterViewInit() {
+    const hero = this.hero().nativeElement;
 
-    products: string[] = [
-        "/assets/images/product/camu_camu_small.png",
-        "/assets/images/product/collagen_small.png",
-        "/assets/images/product/moringa_small.png",
-        "/assets/images/product/gastry_bye_small.png",
-        "/assets/images/product/fem_ease_small.png",
-        "/assets/images/product/vigora_vita_small.png",
-    ]
-    
-    products2: string[] = [
-        "/assets/images/product/camu_camu_powder_small.png",
-        "/assets/images/product/collagen_small.png",
-        "/assets/images/product/moringa_small.png",
-        "/assets/images/product/gastry_bye_small.png",
-        "/assets/images/product/fem_ease_small.png",
-        "/assets/images/product/vigora_vita_small.png",
-    ]
-    constructor() { }
+    this.ctx = gsap.context(() => {
+      gsap
+        .timeline({ defaults: { ease: 'power3.out' } })
+        .from('[data-intro="tagline"]', { y: 20, opacity: 0, duration: 0.6 })
+        .from('[data-intro="logo"]', { scale: 0.85, opacity: 0, filter: 'blur(8px)', duration: 0.9 }, '-=0.3')
+        .from('[data-intro="item"]', { y: 24, opacity: 0, stagger: 0.1, duration: 0.6 }, '-=0.4')
+        .from('[data-intro="column"]', { y: 80, opacity: 0, stagger: 0.15, duration: 1 }, 0.3);
+    }, hero);
 
-    ngOnInit() { }
+    // Infinite columns: vertical on desktop, horizontal rows on mobile.
+    // Each track renders its list twice, so moving 50% loops seamlessly.
+    this.mm = gsap.matchMedia();
+    this.mm.add(
+      {
+        desktop: '(min-width: 768px)',
+        reduce: '(prefers-reduced-motion: reduce)',
+      },
+      (context) => {
+        const { desktop, reduce } = context.conditions!;
+        if (reduce) return;
+
+        const axis = desktop ? 'yPercent' : 'xPercent';
+        this.loops = this.tracks().map((track, i) => {
+          const reverse = i % 2 === 1;
+          return gsap.fromTo(
+            track.nativeElement,
+            { [axis]: reverse ? -50 : 0 },
+            { [axis]: reverse ? 0 : -50, duration: desktop ? 45 : 30, ease: 'none', repeat: -1 },
+          );
+        });
+      },
+    );
+  }
+
+  /** Smoothly slows a column down while hovering, like the original site */
+  setSpeed(index: number, timeScale: number) {
+    const loop = this.loops[index];
+    if (loop) gsap.to(loop, { timeScale, duration: 0.6, ease: 'power2.out' });
+  }
+
+  ngOnDestroy() {
+    this.ctx?.revert();
+    this.mm?.revert();
+  }
 }

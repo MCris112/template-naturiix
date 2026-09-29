@@ -1,0 +1,117 @@
+<app-page-hero title="Contacto" image="/assets/images/bg_home.jpg"
+    subtitle="¿Tienes dudas? Escríbenos y te responderemos lo antes posible." />
+
+<section class="bg-neutral-100 py-20">
+    <div class="container grid gap-10 lg:grid-cols-[380px_1fr]">
+        <!-- Contact info -->
+        <div class="flex flex-col gap-4" reveal="left" [revealStagger]="0.1">
+            @for (item of info; track item.title) {
+                <a [attr.href]="item.href ?? null" [attr.target]="item.href?.startsWith('http') ? '_blank' : null" rel="noopener"
+                    class="group flex items-center gap-4 bg-white p-5 shadow-sm transition-all duration-300"
+                    [class]="item.href ? 'hover:-translate-y-1 hover:shadow-xl' : 'cursor-default'">
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center bg-accent-50 text-3xl text-accent transition-colors duration-300 group-hover:bg-accent group-hover:text-white">
+                        <i class="bx" [class]="item.icon"></i>
+                    </span>
+                    <div>
+                        <p class="text-sm text-neutral-500">{{ item.title }}</p>
+                        <p class="font-bold">{{ item.value }}</p>
+                    </div>
+                </a>
+            }
+
+            <div class="flex gap-3 pt-2 text-3xl text-primary">
+                <a href="#" aria-label="Facebook" class="transition hover:-translate-y-1 hover:text-accent"><i class="bx bxl-facebook-square"></i></a>
+                <a href="#" aria-label="Instagram" class="transition hover:-translate-y-1 hover:text-accent"><i class="bx bxl-instagram"></i></a>
+                <a href="#" aria-label="TikTok" class="transition hover:-translate-y-1 hover:text-accent"><i class="bx bxl-tiktok"></i></a>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-white p-6 shadow-md md:p-10" reveal="right">
+            @if (status() === 'sent') {
+                <div #success class="flex flex-col items-center gap-4 py-16 text-center">
+                    <span data-check class="flex h-20 w-20 items-center justify-center rounded-full bg-primary-500 text-5xl text-white">
+                        <i class="bx bx-check"></i>
+                    </span>
+                    <h2 class="text-3xl text-primary-500">¡Mensaje enviado!</h2>
+                    <p class="max-w-sm text-neutral-600">Gracias por escribirnos. Nos pondremos en contacto contigo muy pronto.</p>
+                    <button type="button" (click)="reset()" class="btn btn-accent-outline mt-2">Enviar otro mensaje</button>
+                </div>
+            } @else {
+                <h2 class="mb-2 text-3xl text-primary-400">Envíanos un mensaje</h2>
+                <p class="mb-8 text-sm text-neutral-500">Los campos con * son obligatorios.</p>
+
+                <form #formEl [formGroup]="form" (ngSubmit)="submit()" novalidate class="grid gap-5 md:grid-cols-2">
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm">Nombre *</span>
+                        <input formControlName="name" type="text" autocomplete="name"
+                            class="border-2 px-3 py-2 outline-none transition-colors focus:border-accent"
+                            [class]="invalid('name') ? 'border-red-400' : 'border-neutral-200'">
+                        @if (invalid('name')) { <small class="text-red-500">Ingresa tu nombre.</small> }
+                    </label>
+
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm">Teléfono</span>
+                        <input formControlName="phone" type="tel" autocomplete="tel"
+                            class="border-2 px-3 py-2 outline-none transition-colors focus:border-accent"
+                            [class]="invalid('phone') ? 'border-red-400' : 'border-neutral-200'">
+                        @if (invalid('phone')) { <small class="text-red-500">Número no válido.</small> }
+                    </label>
+
+                    <label class="flex flex-col gap-1 md:col-span-2">
+                        <span class="text-sm">Correo electrónico *</span>
+                        <input formControlName="email" type="email" autocomplete="email"
+                            class="border-2 px-3 py-2 outline-none transition-colors focus:border-accent"
+                            [class]="invalid('email') ? 'border-red-400' : 'border-neutral-200'">
+                        @if (invalid('email')) { <small class="text-red-500">Ingresa un correo válido.</small> }
+                    </label>
+
+                    <label class="flex flex-col gap-1 md:col-span-2">
+                        <span class="text-sm">Mensaje *</span>
+                        <textarea formControlName="message" rows="5"
+                            class="resize-y border-2 px-3 py-2 outline-none transition-colors focus:border-accent"
+                            [class]="invalid('message') ? 'border-red-400' : 'border-neutral-200'"></textarea>
+                        @if (invalid('message')) { <small class="text-red-500">Escribe un mensaje de al menos 10 caracteres.</small> }
+                    </label>
+
+                    <div class="md:col-span-2">
+                        <button type="submit" [disabled]="status() === 'sending'"
+                            class="btn btn-accent flex w-full items-center justify-center gap-2 py-3 text-lg disabled:opacity-70 md:w-auto md:px-10">
+                            @if (status() === 'sending') {
+                                <i class="bx bx-loader-alt animate-spin"></i> Enviando...
+                            } @else {
+                                <i class="bx bx-send"></i> Enviar mensaje
+                            }
+                        </button>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="bg-white py-20">
+    <div class="container max-w-3xl">
+        <h2 class="mb-10 text-center text-4xl text-primary-400" reveal>Preguntas frecuentes</h2>
+
+        <div class="flex flex-col gap-3" reveal [revealStagger]="0.08">
+            @for (faq of faqs; track faq.question; let i = $index) {
+                <div class="border-2 transition-colors duration-300"
+                    [class]="openFaq() === i ? 'border-accent' : 'border-neutral-200'">
+                    <button type="button" (click)="toggleFaq(i, answer)" [attr.aria-expanded]="openFaq() === i"
+                        class="flex w-full items-center justify-between gap-4 p-4 text-left text-lg">
+                        {{ faq.question }}
+                        <i class="bx bx-plus text-2xl text-accent transition-transform duration-300"
+                            [class.rotate-45]="openFaq() === i"></i>
+                    </button>
+                    <div #answer class="overflow-hidden" [class.hidden]="openFaq() !== i">
+                        <p class="px-4 pb-4 leading-relaxed text-neutral-600">{{ faq.answer }}</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<app-footer />

@@ -1,0 +1,112 @@
+<main class="relative flex min-h-svh w-full flex-col overflow-hidden bg-primary-950 bg-cover bg-fixed bg-center pt-24"
+    style="background-image: url('/assets/images/bg_products.jpg');">
+    <div class="absolute inset-0 bg-black/30"></div>
+
+    <!-- Filters -->
+    <div class="relative z-2 container flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3 text-white">
+            <span class="text-xl">Ver por:</span>
+            @for (filter of filters; track filter.label) {
+                <a routerLink="/productos" [queryParams]="{ tipo: filter.value, q: q() || null }"
+                    class="btn text-sm"
+                    [class]="(tipo() ?? null) === filter.value ? 'btn-accent' : 'btn-light-outline'">
+                    {{ filter.label }}
+                </a>
+            }
+        </div>
+
+        @if (q()) {
+            <p class="text-white">
+                Resultados para <strong class="text-accent-200">“{{ q() }}”</strong>
+                <a routerLink="/productos" [queryParams]="{ tipo: tipo() ?? null }"
+                    class="ml-2 text-sm text-accent-200 underline hover:text-white">Limpiar</a>
+            </p>
+        }
+    </div>
+
+    @if (list().length) {
+        <!-- Carousel -->
+        <div #viewport class="relative z-2 flex flex-1 touch-pan-y items-center overflow-hidden py-6 select-none"
+            (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+            <div #track class="flex w-max will-change-transform">
+                @for (product of list(); track product.id; let i = $index) {
+                    <div class="w-[46vw] shrink-0 sm:w-[30vw] lg:w-[22rem]">
+                        <button type="button" (click)="select(i, product)"
+                            [attr.aria-label]="i === selected() ? 'Ver ' + product.name : 'Seleccionar ' + product.name"
+                            class="group block w-full cursor-pointer outline-none">
+                            <img [src]="product.image" [alt]="product.name" draggable="false"
+                                class="mx-auto h-[42vh] w-auto object-contain drop-shadow-[0_20px_30px_rgb(0_0_0/0.5)] transition-transform duration-500 group-hover:-translate-y-2 md:h-[56vh]">
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div data-products-controls class="relative z-2 container grid grid-cols-[auto_1fr_auto] items-end gap-4 pb-10">
+            <button type="button" (click)="move(-1)" [disabled]="selected() === 0" aria-label="Anterior"
+                class="btn btn-light-outline flex h-14 w-14 items-center justify-center text-3xl disabled:opacity-30 md:w-44">
+                <i class="bx bx-chevron-left"></i>
+                <span class="hidden text-lg md:inline">Anterior</span>
+            </button>
+
+            <div class="flex flex-col items-center gap-2 text-center">
+                <p class="text-lg text-primary-200 md:text-2xl">{{ selectedProduct()?.name }}</p>
+                <button type="button" (click)="open(selectedProduct())"
+                    class="btn btn-accent w-full max-w-md py-4 text-2xl shadow-[0_10px_40px_rgb(128_43_135/0.5)] transition-transform hover:-translate-y-1 md:text-4xl">
+                    ¡Ver producto!
+                </button>
+            </div>
+
+            <button type="button" (click)="move(1)" [disabled]="selected() === list().length - 1" aria-label="Siguiente"
+                class="btn btn-light-outline flex h-14 w-14 items-center justify-center text-3xl disabled:opacity-30 md:w-44">
+                <span class="hidden text-lg md:inline">Siguiente</span>
+                <i class="bx bx-chevron-right"></i>
+            </button>
+        </div>
+    } @else {
+        <div class="relative z-2 container flex flex-1 flex-col items-center justify-center gap-4 text-center text-white">
+            <i class="bx bx-search-alt text-7xl text-accent-200"></i>
+            <p class="text-2xl">No encontramos productos para tu búsqueda.</p>
+            <a routerLink="/productos" class="btn btn-accent">Ver todos los productos</a>
+        </div>
+    }
+</main>
+
+<!-- Info card -->
+@if (opened(); as product) {
+    <div class="fixed inset-0 z-[80] flex items-center justify-center p-4">
+        <div data-card-backdrop (click)="close()" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+        <article #card role="dialog" aria-modal="true" [attr.aria-label]="product.name"
+            class="relative grid max-h-[92svh] w-full max-w-5xl overflow-y-auto bg-white shadow-2xl md:grid-cols-[45%_55%]">
+            <figure class="flex items-center justify-center bg-neutral-100 p-6 md:p-10">
+                <img data-card-image [src]="firstVariation(product).image ?? product.image" [alt]="product.name"
+                    class="max-h-[34svh] w-auto object-contain md:max-h-[60svh]">
+            </figure>
+
+            <div class="flex flex-col items-center justify-center gap-5 p-6 text-center md:p-12">
+                <h2 data-card-item class="text-4xl font-bold uppercase text-primary-400 md:text-5xl">{{ product.name }}</h2>
+
+                <p data-card-item class="line-clamp-4 max-w-sm text-sm">{{ product.description }}</p>
+
+                @let variation = firstVariation(product);
+                <p data-card-item class="text-sm">
+                    {{ hasManyVariations(product) ? 'Desde' : 'Contiene' }} {{ variation.attributes.size }}
+                </p>
+
+                <div data-card-item class="flex flex-col items-center">
+                    @if (variation.price.discount) {
+                        <span class="text-lg text-accent-300 line-through">{{ variation.price | price:'regular' }}</span>
+                    }
+                    <span class="text-5xl font-bold md:text-7xl">{{ variation.price | price }}</span>
+                </div>
+
+                <div data-card-item class="flex w-full max-w-md flex-wrap gap-4">
+                    <a [routerLink]="['/productos', product.slug]" class="btn btn-accent grow basis-40 text-center">Más información</a>
+                    <button type="button" (click)="close()" class="btn btn-accent-outline grow basis-40">Cerrar</button>
+                </div>
+            </div>
+        </article>
+    </div>
+}
